@@ -19,7 +19,8 @@
       pullUpLoad:{
         type:Boolean,
         default:false
-      },
+      }
+
     },
     data() {
 		  return {
@@ -40,20 +41,31 @@
         // console.log(position);
         this.$emit('scroll',position)
       })
-      //3.监听上拉事件
-      this.scroll.on('pullingUp',()=>{
-        this.$emit('pullingUp')
-      })
+
+      //3.监听scroll滚到底部
+      if(this.pullUpLoad){
+        this.scroll.on('pullingUp',()=>{
+          // console.log('上拉到底部')
+          this.$emit('pullingUp')
+        })
+      }
     },
 		components:{
 			BScroll
     },
     methods: {
       scrollTo(x,y,time=300){
-        this.scroll.scrollTo(x,y,time)
+        this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x,y,time)
       },
       finishPullUp(){
         this.scroll.finishPullUp()
+      },
+      refresh(){
+        this.scroll && this.scroll.refresh()
+        // console.log('----')
+      },
+      finishPullUp(){
+        this.scroll && this.scroll.finishPullUp()
       }
     },
 	}
