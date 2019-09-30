@@ -3,6 +3,11 @@
    <nav-bar class="home-nav">
      <div slot="center">购物街</div>
    </nav-bar>
+   <tab-control
+          class="tab-control"
+          :titles="['流行','新款','精选']"
+          @tabClick="tabClick"
+          ref="tabControl1" v-show="isTabFixed"/>
 
   <scroll class="wrapper"
           ref="scroll"
@@ -12,17 +17,18 @@
           @pullingUp="loadMore"
          >
    <!-- 轮播图 -->
-    <home-swiper :banners="banners" />
+    <home-swiper :banners="banners"
+                 @swiperImageLoad="swiperImageLoad"/>
    <!-- 热点推荐 -->
     <recommend-view :recommends="recommends"/>
    <!-- 本周流行 -->
     <feature-view />
     <!-- 选项卡 -->
     <tab-control
-          class="tab-control"
+
           :titles="['流行','新款','精选']"
           @tabClick="tabClick"
-          ref="tabControl"/>
+          ref="tabControl2" :class="{fixed:isTabFixed}"/>
     <goods-list :goods="showGoods"/>
   </scroll>
   <!-- 回到顶部箭头 .native修饰符可以监听组件的原生事件 -->
@@ -69,13 +75,22 @@ import FeatureView from './childrenComps/FeatureView'
       //  当前的默认类型为pop
        currentType:'pop',
        isShowBackTop:false,
-       tabOffsetTop:0
+       tabOffsetTop:0,
+       isTabFixed:false,
+       saveY:0
      }
    },
    computed: {
      showGoods(){
        return this.goods[this.currentType].list
      }
+   },
+   activated () {
+    //  this.$refs.scroll.scrollTo(0,-this.saveY,0);
+    //  this.$refs.scroll.refresh();
+   },
+   deactivated () {
+     this.saveY=this.$refs.scroll.getScrollY();
    },
    created(){
      //1.请求多个数据
@@ -97,16 +112,12 @@ import FeatureView from './childrenComps/FeatureView'
       refresh()
       })
 
-      // 2.获取tabControl的offsetTop
-      //   所有的组件都拥有一个属性$el,用于获取组件中的元素
-      console.log(this.$refs.tabControl.$el.offsetTop)
+
    },
    methods: {
      /**
       * 事件监听相关的方法
       */
-
-
       // 根据点击的index值，设置商品列表的pop，new，sell
       tabClick(index){
         switch(index){
@@ -120,21 +131,32 @@ import FeatureView from './childrenComps/FeatureView'
               this.currentType='sell';
               break;
         }
+        this.$refs.tabControl1.currentIndex=index;
+        this.$refs.tabControl2.currentIndex=index;
       },
       backClick(){
         console.log('backClick')
         this.$refs.scroll.scrollTo(0,0,500)
       },
       contentScroll(position){
+        // 1.判断BackTop是否显示
         // console.log(position);
         this.isShowBackTop= -position.y>1000;
-      },
 
+        // 2.决定tabControl是否吸顶（position:fixed）
+        this.isTabFixed = (-position.y) > this.tabOffsetTop;
+
+      },
       loadMore(){
         console.log('加载更多')
         this.getHomeGoods(this.currentType)
       },
-
+      swiperImageLoad(){
+      // 2.获取tabControl的offsetTop
+      //   所有的组件都拥有一个属性$el,用于获取组件中的元素
+      // console.log(this.$refs.tabControl.$el.offsetTop)
+      this.tabOffsetTop=this.$refs.tabControl2.$el.offsetTop
+      },
      /**
       * 网络请求相关的方法
       */
@@ -177,22 +199,23 @@ import FeatureView from './childrenComps/FeatureView'
 .home-nav{
   background-color: var(--color-tint);
   color: #fff;
-  position: fixed;
+  /* 在使用浏览器原生滚动时，为了让导航不随屏幕而滚动*/
+  /* position: fixed;
   left: 0;
   right: 0;
   top: 0;
-  z-index: 9;
+  z-index: 9; */
 }
-/* .tab-control{
-  position: sticky;
-  top: 42px;
-  z-index:9
-} */
+.tab-control{
+  position: relative;
+  /* top: 42px; */
+  z-index:9;
+}
  .wrapper{
    /* height: cale(100%-93px); */
    /* margin-top: 44px; */
    /* height: 300px; */
-   /* overflow: hidden; */
+   overflow: hidden;
 
    position: absolute;
    top: 44px;
@@ -200,4 +223,8 @@ import FeatureView from './childrenComps/FeatureView'
    left: 0;
    right: 0;
  }
+
+
+
+
 </style>

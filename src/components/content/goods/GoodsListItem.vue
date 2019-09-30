@@ -1,5 +1,5 @@
 <template>
- <div class="goods-item">
+ <div class="goods-item" @click="itemClick">
    <img :src="goodsItem.show.img" alt="" @load="imageLoad">
    <div class="goods-info">
      <p>{{goodsItem.title}}</p>
@@ -25,6 +25,17 @@
       //  console.log('-')
       // 事件总线
       this.$bus.$emit('itemImageLoad')
+     },
+     itemClick(){
+       this.$router.push('/detail/'+this.goodsItem.iid)
+
+      // 动态路由跳转
+      //  this.$router.push({
+      //    path:'detail',
+      //    query:{
+
+      //    }
+      //  })
      }
    },
    components: {
