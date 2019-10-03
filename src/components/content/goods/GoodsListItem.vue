@@ -15,9 +15,10 @@
    props: {
      goodsItem:{
        type:Object,
-       default(){
-         return {}
-       }
+      //  default(){
+      //    return {}
+      //  }
+      defalut:{}
      }
    },
    methods: {
@@ -28,6 +29,7 @@
      },
      itemClick(){
        this.$router.push('/detail/'+this.goodsItem.iid)
+        console.log(this.goodsItem.iid)
 
       // 动态路由跳转
       //  this.$router.push({
