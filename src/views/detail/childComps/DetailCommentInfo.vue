@@ -1,5 +1,4 @@
 <template>
-  <div>
     <div v-if="Object.keys(commentInfo).length !== 0" class="comment-info">
       <div class="info-header">
         <div class="header-title">用户评价</div>
@@ -8,10 +7,12 @@
           <i class="arrow-right"></i>
         </div>
       </div>
+
       <div class="info-user">
         <img :src="commentInfo.user.avatar" alt="">
         <span>{{commentInfo.user.uname}}</span>
       </div>
+
       <div class="info-detail">
         <p>{{commentInfo.content}}</p>
         <div class="info-other">
@@ -23,7 +24,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -41,8 +41,10 @@
     },
     filters: {
 		  showDate: function (value) {
+        // 将时间戳转为Date对象
         let date = new Date(value*1000);
-        return formatDate(date, 'yyyy-MM-dd')
+        // 将date进行格式化
+        return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
       }
     }
 	}

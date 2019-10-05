@@ -41,10 +41,12 @@ import Scroll from '@/components/common/scroll/Scroll'
 import NavBar from '@/components/common/navbar/NavBar'
 import TabControl from '@/components/content/tabControl/TabControl'
 import GoodsList from '@/components/content/goods/GoodsList'
-import BackTop from '@/components/content/backTop/BackTop'
+
 
 import {getHomeMultidata,getHomeGoods} from '@/network/home'
 import {debounce} from '@/common/utils'
+import {itemListenerMixin,backTopMixin} from '@/common/mixin'
+
 
 import HomeSwiper from './childrenComps/HomeSwiper'
 import RecommendView from './childrenComps/RecommendView'
@@ -60,8 +62,9 @@ import FeatureView from './childrenComps/FeatureView'
      TabControl,
      GoodsList,
      Scroll,
-     BackTop
+
    },
+   mixins:[itemListenerMixin,backTopMixin],
    data(){
      return {
        banners:[],
@@ -74,12 +77,14 @@ import FeatureView from './childrenComps/FeatureView'
        },
       //  当前的默认类型为pop
        currentType:'pop',
-       isShowBackTop:false,
+
        tabOffsetTop:0,
        isTabFixed:false,
-       saveY:0
+       saveY:0,
+
      }
    },
+
    computed: {
      showGoods(){
        return this.goods[this.currentType].list
@@ -90,7 +95,10 @@ import FeatureView from './childrenComps/FeatureView'
     //  this.$refs.scroll.refresh();
    },
    deactivated () {
+    //  1.保存y值
      this.saveY=this.$refs.scroll.getScrollY();
+    //  2.取消全局事件的监听
+     this.$bus.$off('itemImgLoad',this.itemImgListener)
    },
    created(){
      //1.请求多个数据
@@ -102,15 +110,16 @@ import FeatureView from './childrenComps/FeatureView'
 
    },
    mounted () {
-    //  1.图片加载完成的事件监听
-     const refresh=debounce(this.$refs.scroll.refresh,50)
-      //3.监听item中的图片加载完成
-      //事件总线
-      this.$bus.$on('itemImageLoad',()=>{
-      // console.log('-----')
-      // this.$refs.scroll.refresh()
-      refresh()
-      })
+    // //  1.图片加载完成的事件监听
+    //  const refresh=debounce(this.$refs.scroll.refresh,50)
+    //   //3.监听item中的图片加载完成
+    //   //事件总线
+
+    //   // 对监听的事件进行保存
+    //   this.itemImgListener=()=>{
+    //       refresh()
+    //   }
+    //   this.$bus.$on('itemImageLoad',this.itemImgListener)
 
 
    },
@@ -131,13 +140,11 @@ import FeatureView from './childrenComps/FeatureView'
               this.currentType='sell';
               break;
         }
+        // 让两个tabControl保持选中状态一致
         this.$refs.tabControl1.currentIndex=index;
         this.$refs.tabControl2.currentIndex=index;
       },
-      backClick(){
-        console.log('backClick')
-        this.$refs.scroll.scrollTo(0,0,500)
-      },
+
       contentScroll(position){
         // 1.判断BackTop是否显示
         // console.log(position);
