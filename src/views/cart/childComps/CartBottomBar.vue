@@ -62,11 +62,13 @@ import CheckButton from '@/components/content/checkButton/CheckButton'
 
 <style scoped>
 .bottom-bar{
-  height: 40px;
+  width:100%;
+  height: 44px;
   background-color: #eee;
-  position: relative;
-  bottom: -435px;
-  line-height: 40px;
+  position: fixed;
+  bottom: 50px;
+  left: 0;
+  line-height: 44px;
   display: flex;
   font-size: 14px;
 }
